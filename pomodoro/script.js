@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    alert('Script loaded successfully!');
+    //alert('Script loaded successfully!');
 
     const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api'; // Replace with your Render backend URL
     const timerDisplay = document.getElementById('timer-display');
@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
 
     if (!timerDisplay || !startBtn || !pauseBtn || !resetBtn || !sessionList) {
-        alert('One or more DOM elements not found!');
+        //alert('One or more DOM elements not found!');
         return;
     }
 
-    alert('DOM elements found, setting up event listeners...');
+    //alert('DOM elements found, setting up event listeners...');
 
     function updateTimer() {
         //alert('Updating timer...');
@@ -33,21 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     startBtn.disabled = false;
                     pauseBtn.disabled = true;
                     loadSessions();
-                    alert('Pomodoro completed!');
+                    //alert('Pomodoro completed!');
                 }
             })
             .catch(error => alert('Timer update error: ' + error.message));
     }
 
     startBtn.addEventListener('click', () => {
-        alert('Start button clicked!');
+        //alert('Start button clicked!');
         fetch(`${BASE_URL}/start_timer`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user_id: 'default_user' })
         }).then(response => {
             if (!response.ok) throw new Error('Start request failed');
-            alert('Start request successful!');
+            //alert('Start request successful!');
             startBtn.disabled = true;
             pauseBtn.disabled = false;
             timerInterval = setInterval(updateTimer, 1000);
@@ -55,11 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     pauseBtn.addEventListener('click', () => {
-        alert('Pause button clicked!');
+        //alert('Pause button clicked!');
         fetch(`${BASE_URL}/pause_timer`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) throw new Error('Pause request failed');
-                alert('Pause request successful!');
+                //alert('Pause request successful!');
                 clearInterval(timerInterval);
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
@@ -68,11 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     resetBtn.addEventListener('click', () => {
-        alert('Reset button clicked!');
+        //alert('Reset button clicked!');
         fetch(`${BASE_URL}/reset_timer`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) throw new Error('Reset request failed');
-                alert('Reset request successful!');
+                //alert('Reset request successful!');
                 clearInterval(timerInterval);
                 timerDisplay.textContent = '25:00';
                 startBtn.disabled = false;
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function loadSessions() {
-        alert('Loading sessions...');
+        //alert('Loading sessions...');
         fetch(`${BASE_URL}/sessions?user_id=default_user`)
             .then(response => {
                 if (!response.ok) throw new Error('Sessions request failed');
@@ -102,5 +102,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadSessions();
     setInterval(loadSessions, 30000); // Refresh every 30 seconds
-    alert('Setup complete, ready to use!');
+    //alert('Setup complete, ready to use!');
 });
