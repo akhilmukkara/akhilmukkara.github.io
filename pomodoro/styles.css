@@ -30,12 +30,28 @@ button {
     border-radius: 5px;
 }
 
-#start-btn { background-color: #4CAF50; color: white; }
-#pause-btn { background-color: #FFC107; color: white; }
-#reset-btn { background-color: #F44336; color: white; }
+#start-btn { 
+    background-color: #4CAF50; 
+    color: white; 
+}
+
+#pause-btn { 
+    background-color: #FFC107; 
+    color: white; 
+}
+
+#reset-btn { 
+    background-color: #F44336; 
+    color: white; 
+}
 
 button:hover {
     opacity: 0.9;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 #session-history {
