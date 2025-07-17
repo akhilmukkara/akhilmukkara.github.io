@@ -1,3 +1,5 @@
+const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api'; // Replace with your actual backend URL
+
 const timerDisplay = document.getElementById('timer-display');
 const startBtn = document.getElementById('start-btn');
 const pauseBtn = document.getElementById('pause-btn');
@@ -5,84 +7,98 @@ const resetBtn = document.getElementById('reset-btn');
 const sessionList = document.getElementById('session-list');
 
 let timerInterval;
-let remainingTime = 25 * 60; // 25 minutes in seconds
-let isRunning = false;
-let sessions = [];
-
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-}
-
-function updateDisplay() {
-    timerDisplay.textContent = formatTime(remainingTime);
-}
 
 function updateTimer() {
-    if (remainingTime > 0) {
-        remainingTime--;
-        updateDisplay();
-    } else {
-        // Timer finished
-        clearInterval(timerInterval);
-        isRunning = false;
-        startBtn.disabled = false;
-        pauseBtn.disabled = true;
-        
-        // Add completed session
-        const now = new Date();
-        sessions.push({
-            start_time: now.toLocaleString(),
-            completed: true
+    fetch(`${BASE_URL}/timer_status`)
+        .then(response => response.json())
+        .then(data => {
+            // Fixed: Only show minutes and seconds (no milliseconds)
+            const minutes = Math.floor(data.remaining_time / 60);
+            const seconds = data.remaining_time % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (data.remaining_time === 0 && data.is_running) {
+                clearInterval(timerInterval);
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                loadSessions();
+                alert('Pomodoro session completed!');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching timer status:', error);
         });
-        updateSessionList();
-        
-        alert('Pomodoro session completed!');
-    }
 }
 
-function startTimer() {
-    if (!isRunning) {
-        isRunning = true;
+startBtn.addEventListener('click', () => {
+    fetch(`${BASE_URL}/start_timer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: 'default_user' })
+    })
+    .then(response => response.json())
+    .then(() => {
         startBtn.disabled = true;
         pauseBtn.disabled = false;
-        
         timerInterval = setInterval(updateTimer, 1000);
-    }
-}
+    })
+    .catch(error => {
+        console.error('Error starting timer:', error);
+    });
+});
 
-function pauseTimer() {
-    if (isRunning) {
+pauseBtn.addEventListener('click', () => {
+    fetch(`${BASE_URL}/pause_timer`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(() => {
         clearInterval(timerInterval);
-        isRunning = false;
         startBtn.disabled = false;
         pauseBtn.disabled = true;
-    }
-}
-
-function resetTimer() {
-    clearInterval(timerInterval);
-    isRunning = false;
-    remainingTime = 25 * 60;
-    updateDisplay();
-    startBtn.disabled = false;
-    pauseBtn.disabled = true;
-}
-
-function updateSessionList() {
-    sessionList.innerHTML = '';
-    sessions.forEach(session => {
-        const li = document.createElement('li');
-        li.textContent = `${session.start_time} - ${session.completed ? 'Completed' : 'Incomplete'}`;
-        sessionList.appendChild(li);
+    })
+    .catch(error => {
+        console.error('Error pausing timer:', error);
     });
+});
+
+resetBtn.addEventListener('click', () => {
+    fetch(`${BASE_URL}/reset_timer`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(() => {
+        clearInterval(timerInterval);
+        timerDisplay.textContent = '25:00';
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+    })
+    .catch(error => {
+        console.error('Error resetting timer:', error);
+    });
+});
+
+function loadSessions() {
+    fetch(`${BASE_URL}/sessions?user_id=default_user`)
+        .then(response => response.json())
+        .then(sessions => {
+            sessionList.innerHTML = '';
+            sessions.forEach(session => {
+                const li = document.createElement('li');
+                li.textContent = `${session.start_time} - ${session.completed ? 'Completed' : 'Incomplete'}`;
+                sessionList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading sessions:', error);
+        });
 }
 
-// Event listeners
-startBtn.addEventListener('click', startTimer);
-pauseBtn.addEventListener('click', pauseTimer);
-resetBtn.addEventListener('click', resetTimer);
+// Initialize
+loadSessions();
+setInterval(loadSessions, 30000); // Refresh session list every 30 seconds
 
-// Initialize display
-updateDisplay();
+// Initial timer status check
+updateTimer();
