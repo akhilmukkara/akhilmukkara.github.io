@@ -41,6 +41,9 @@ startBtn.addEventListener('click', () => {
     .then(() => {
         startBtn.disabled = true;
         pauseBtn.disabled = false;
+        
+        // Update immediately, then start the interval
+        updateTimer();
         timerInterval = setInterval(updateTimer, 1000);
     })
     .catch(error => {
