@@ -12,12 +12,13 @@ function updateTimer() {
     fetch(`${BASE_URL}/timer_status`)
         .then(response => response.json())
         .then(data => {
-            // Fixed: Only show minutes and seconds (no milliseconds)
-            const minutes = Math.floor(data.remaining_time / 60);
-            const seconds = data.remaining_time % 60;
+            // Force integer seconds to avoid decimal issues
+            const totalSeconds = Math.floor(data.remaining_time);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
             timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            if (data.remaining_time === 0 && data.is_running) {
+            if (totalSeconds <= 0 && data.is_running) {
                 clearInterval(timerInterval);
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
