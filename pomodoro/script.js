@@ -102,6 +102,11 @@ pauseBtn.addEventListener('click', () => {
 });
 
 resetBtn.addEventListener('click', () => {
+    // Log incomplete session if there was an active session
+    if (sessionStartTime) {
+        logIncompleteSession();
+    }
+    
     fetch(`${BASE_URL}/reset_timer`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -114,8 +119,9 @@ resetBtn.addEventListener('click', () => {
         pauseBtn.disabled = true;
         startBtn.textContent = 'Start';
         
-        // Reset session tracking
+        // Reset session tracking and reload sessions
         resetSessionTracking();
+        loadSessions();
     })
     .catch(error => {
         console.error('Error resetting timer:', error);
@@ -130,7 +136,8 @@ function loadSessions() {
             sessions.forEach(session => {
                 const li = document.createElement('li');
                 const pauseText = session.pause_count !== undefined ? ` (${session.pause_count} pauses)` : '';
-                li.textContent = `${session.start_time} - Completed${pauseText}`;
+                const statusText = session.completed ? 'Completed' : 'Incomplete';
+                li.textContent = `${session.start_time} - ${statusText}${pauseText}`;
                 sessionList.appendChild(li);
             });
         })
@@ -155,6 +162,25 @@ function logCompletedSession() {
     })
     .catch(error => {
         console.error('Error logging session:', error);
+    });
+}
+
+function logIncompleteSession() {
+    const sessionData = {
+        user_id: 'default_user',
+        start_time: sessionStartTime,
+        end_time: new Date().toLocaleString(),
+        completed: false,
+        pause_count: currentSessionPauses
+    };
+    
+    fetch(`${BASE_URL}/log_session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionData)
+    })
+    .catch(error => {
+        console.error('Error logging incomplete session:', error);
     });
 }
 
