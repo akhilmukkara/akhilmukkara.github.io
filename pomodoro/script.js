@@ -9,6 +9,7 @@ let timerInterval;
 let isRunning = false;
 let currentSessionPauses = 0;
 let sessionStartTime = null;
+let sessionActive = false; // Track if a session is actually active
 
 function updateTimer() {
     fetch(`${BASE_URL}/timer_status`)
@@ -37,8 +38,10 @@ function updateTimer() {
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
                 
-                // Log completed session with pause count
-                logCompletedSession();
+                // Log completed session if we had an active session
+                if (sessionActive) {
+                    logCompletedSession();
+                }
                 
                 loadSessions();
                 alert(`Pomodoro session completed! You paused ${currentSessionPauses} time(s) during this session.`);
@@ -53,10 +56,11 @@ function updateTimer() {
 }
 
 startBtn.addEventListener('click', () => {
-    // If this is a fresh start (25:00), record session start time
+    // If this is a fresh start (not a resume), start new session tracking
     if (startBtn.textContent === 'Start') {
         sessionStartTime = new Date().toLocaleString();
         currentSessionPauses = 0;
+        sessionActive = true;
     }
     
     fetch(`${BASE_URL}/start_timer`, {
@@ -68,7 +72,6 @@ startBtn.addEventListener('click', () => {
     .then(() => {
         startBtn.disabled = true;
         pauseBtn.disabled = false;
-        startBtn.textContent = 'Start';
         
         // Update immediately, then start the interval
         updateTimer();
@@ -81,8 +84,10 @@ startBtn.addEventListener('click', () => {
 });
 
 pauseBtn.addEventListener('click', () => {
-    // Increment pause counter
-    currentSessionPauses++;
+    // Only count pause if we have an active session
+    if (sessionActive) {
+        currentSessionPauses++;
+    }
     
     fetch(`${BASE_URL}/pause_timer`, { 
         method: 'POST',
@@ -103,7 +108,7 @@ pauseBtn.addEventListener('click', () => {
 
 resetBtn.addEventListener('click', () => {
     // Log incomplete session if there was an active session
-    if (sessionStartTime) {
+    if (sessionActive) {
         logIncompleteSession();
     }
     
@@ -187,6 +192,7 @@ function logIncompleteSession() {
 function resetSessionTracking() {
     currentSessionPauses = 0;
     sessionStartTime = null;
+    sessionActive = false;
 }
 
 // Initialize
