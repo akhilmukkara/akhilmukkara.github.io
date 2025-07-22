@@ -7,9 +7,6 @@ const sessionList = document.getElementById('session-list');
 
 let timerInterval;
 let isRunning = false;
-let currentSessionPauses = 0;
-let sessionStartTime = null;
-let sessionActive = false; // Track if a session is actually active
 
 function updateTimer() {
     fetch(`${BASE_URL}/timer_status`)
@@ -37,17 +34,8 @@ function updateTimer() {
                 clearInterval(timerInterval);
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
-                
-                // Log completed session if we had an active session
-                if (sessionActive) {
-                    logCompletedSession();
-                }
-                
                 loadSessions();
-                alert(`Pomodoro session completed! You paused ${currentSessionPauses} time(s) during this session.`);
-                
-                // Reset for next session
-                resetSessionTracking();
+                alert('Pomodoro session completed!');
             }
         })
         .catch(error => {
@@ -56,13 +44,6 @@ function updateTimer() {
 }
 
 startBtn.addEventListener('click', () => {
-    // If this is a fresh start (not a resume), start new session tracking
-    if (startBtn.textContent === 'Start') {
-        sessionStartTime = new Date().toLocaleString();
-        currentSessionPauses = 0;
-        sessionActive = true;
-    }
-    
     fetch(`${BASE_URL}/start_timer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,6 +53,7 @@ startBtn.addEventListener('click', () => {
     .then(() => {
         startBtn.disabled = true;
         pauseBtn.disabled = false;
+        startBtn.textContent = 'Start';
         
         // Update immediately, then start the interval
         updateTimer();
@@ -84,11 +66,6 @@ startBtn.addEventListener('click', () => {
 });
 
 pauseBtn.addEventListener('click', () => {
-    // Only count pause if we have an active session
-    if (sessionActive) {
-        currentSessionPauses++;
-    }
-    
     fetch(`${BASE_URL}/pause_timer`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -107,11 +84,6 @@ pauseBtn.addEventListener('click', () => {
 });
 
 resetBtn.addEventListener('click', () => {
-    // Log incomplete session if there was an active session
-    if (sessionActive) {
-        logIncompleteSession();
-    }
-    
     fetch(`${BASE_URL}/reset_timer`, { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -123,10 +95,6 @@ resetBtn.addEventListener('click', () => {
         startBtn.disabled = false;
         pauseBtn.disabled = true;
         startBtn.textContent = 'Start';
-        
-        // Reset session tracking and reload sessions
-        resetSessionTracking();
-        loadSessions();
     })
     .catch(error => {
         console.error('Error resetting timer:', error);
@@ -140,59 +108,13 @@ function loadSessions() {
             sessionList.innerHTML = '';
             sessions.forEach(session => {
                 const li = document.createElement('li');
-                const pauseText = session.pause_count !== undefined ? ` (${session.pause_count} pauses)` : '';
-                const statusText = session.completed ? 'Completed' : 'Incomplete';
-                li.textContent = `${session.start_time} - ${statusText}${pauseText}`;
+                li.textContent = `${session.start_time} - ${session.completed ? 'Completed' : 'Incomplete'}`;
                 sessionList.appendChild(li);
             });
         })
         .catch(error => {
             console.error('Error loading sessions:', error);
         });
-}
-
-function logCompletedSession() {
-    const sessionData = {
-        user_id: 'default_user',
-        start_time: sessionStartTime,
-        end_time: new Date().toLocaleString(),
-        completed: true,
-        pause_count: currentSessionPauses
-    };
-    
-    fetch(`${BASE_URL}/log_session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionData)
-    })
-    .catch(error => {
-        console.error('Error logging session:', error);
-    });
-}
-
-function logIncompleteSession() {
-    const sessionData = {
-        user_id: 'default_user',
-        start_time: sessionStartTime,
-        end_time: new Date().toLocaleString(),
-        completed: false,
-        pause_count: currentSessionPauses
-    };
-    
-    fetch(`${BASE_URL}/log_session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionData)
-    })
-    .catch(error => {
-        console.error('Error logging incomplete session:', error);
-    });
-}
-
-function resetSessionTracking() {
-    currentSessionPauses = 0;
-    sessionStartTime = null;
-    sessionActive = false;
 }
 
 // Initialize
