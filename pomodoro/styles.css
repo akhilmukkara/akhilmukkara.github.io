@@ -1,398 +1,73 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
+    font-family: Arial, sans-serif;
     text-align: center;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    max-width: 500px;
-    width: 90%;
+    margin: 20px;
+    background-color: 
+#f5f5f5;
 }
 
 h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 300;
-}
-
-.timer-container {
-    position: relative;
-    margin: 2rem 0;
-}
-
-.progress-ring {
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 1rem;
-    position: relative;
-}
-
-.progress-ring__circle {
-    stroke: rgba(255, 255, 255, 0.2);
-    fill: transparent;
-    stroke-width: 8;
-}
-
-.progress-ring__progress {
-    stroke: #4CAF50;
-    fill: transparent;
-    stroke-width: 8;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    transition: stroke-dasharray 0.3s ease;
-}
-
-.progress-ring__progress.break {
-    stroke: #2196F3;
-}
-
-.progress-ring__progress.long-break {
-    stroke: #FF9800;
+    font-size: 32px;
+    color: #333;
 }
 
 #timer-display {
-    font-size: 3rem;
+    font-size: 48px;
     font-weight: bold;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    color: #333;
+    margin: 20px 0;
 }
 
-.session-type {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.controls {
-    margin: 2rem 0;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+#controls {
+    margin: 20px 0;
 }
 
 button {
-    padding: 12px 24px;
-    font-size: 1rem;
-    font-weight: 500;
+    padding: 10px 20px;
+    margin: 0 5px;
+    font-size: 16px;
     cursor: pointer;
     border: none;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    min-width: 100px;
+    border-radius: 5px;
 }
 
-.btn-start {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
-    color: white;
+#start-btn { 
+    background-color: 
+#4CAF50; 
+    color: white; 
 }
 
-.btn-pause {
-    background: linear-gradient(45deg, #FF9800, #f57c00);
-    color: white;
+#pause-btn { 
+    background-color: 
+#FFC107; 
+    color: white; 
 }
 
-.btn-reset {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
-    color: white;
+#reset-btn { 
+    background-color: 
+#F44336; 
+    color: white; 
 }
 
-.btn-skip {
-    background: linear-gradient(45deg, #2196F3, #1976D2);
-    color: white;
-}
-
-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+button:hover {
+    opacity: 0.9;
 }
 
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
 }
 
-.settings {
-    margin: 2rem 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
+#session-history {
+    margin-top: 20px;
 }
 
-.setting-group {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+#session-list {
+    list-style-type: none;
+    padding: 0;
 }
 
-.setting-group label {
-    display: block;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-}
-
-.setting-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    text-align: center;
-}
-
-.setting-group input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.session-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0;
-}
-
-.stat-card {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    display: block;
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    opacity: 0.8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.session-history {
-    margin-top: 2rem;
-    text-align: left;
-}
-
-.session-history h3 {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-weight: 300;
-}
-
-.session-list {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 1rem;
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.session-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.session-item:last-child {
-    border-bottom: none;
-}
-
-.session-time {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.session-status {
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-}
-
-.session-status.completed {
-    background: rgba(76, 175, 80, 0.3);
-    color: #4CAF50;
-}
-
-.session-status.incomplete {
-    background: rgba(244, 67, 54, 0.3);
-    color: #f44336;
-}
-
-.sound-toggle {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.settings-toggle {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.modal h2 {
-    margin-bottom: 1rem;
-    font-weight: 300;
-}
-
-.modal input {
-    width: 100%;
-    padding: 1rem;
-    margin: 1rem 0;
-    border: none;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 1rem;
-}
-
-.modal input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1rem;
-}
-
-.connection-status {
-    position: absolute;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.connection-status.connected {
-    background: rgba(76, 175, 80, 0.3);
-    color: #4CAF50;
-}
-
-.connection-status.disconnected {
-    background: rgba(244, 67, 54, 0.3);
-    color: #f44336;
-}
-
-.connection-status.testing {
-    background: rgba(255, 152, 0, 0.3);
-    color: #FF9800;
-}
-
-.hidden {
-    display: none;
-}
-
-@media (max-width: 600px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    #timer-display {
-        font-size: 2.5rem;
-    }
-    
-    .progress-ring {
-        width: 150px;
-        height: 150px;
-    }
-    
-    .controls {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    button {
-        min-width: 150px;
-    }
+#session-list li {
+    padding: 5px 0;
+    font-size: 14px;
 }
