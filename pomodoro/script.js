@@ -82,7 +82,7 @@
 
         function useOfflineMode() {
             offlineMode = true;
-            BASE_URL = '';
+            BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api';
             localStorage.removeItem('pomodoroBackendUrl');
             updateConnectionStatus('offline');
             hideBackendUrlModal();
