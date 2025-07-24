@@ -8,8 +8,25 @@ const sessionList = document.getElementById('session-list');
 let timerInterval;
 let isRunning = false;
 
+// Generate a unique user ID for this session
+function generateUserId() {
+    // Try to get existing user ID from localStorage
+    let userId = localStorage.getItem('pomodoro_user_id');
+    
+    if (!userId) {
+        // Generate a new unique ID using timestamp + random number
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('pomodoro_user_id', userId);
+    }
+    
+    return userId;
+}
+
+// Get the user ID for this browser session
+const USER_ID = generateUserId();
+
 function updateTimer() {
-    fetch(`${BASE_URL}/timer_status`)
+    fetch(`${BASE_URL}/timer_status?user_id=${USER_ID}`)
         .then(response => response.json())
         .then(data => {
             // Force integer seconds to avoid decimal issues
@@ -47,7 +64,7 @@ startBtn.addEventListener('click', () => {
     fetch(`${BASE_URL}/start_timer`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: 'default_user' })
+        body: JSON.stringify({ user_id: USER_ID })
     })
     .then(response => response.json())
     .then(() => {
@@ -68,7 +85,8 @@ startBtn.addEventListener('click', () => {
 pauseBtn.addEventListener('click', () => {
     fetch(`${BASE_URL}/pause_timer`, { 
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: USER_ID })
     })
     .then(response => response.json())
     .then(() => {
@@ -86,7 +104,8 @@ pauseBtn.addEventListener('click', () => {
 resetBtn.addEventListener('click', () => {
     fetch(`${BASE_URL}/reset_timer`, { 
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: USER_ID })
     })
     .then(response => response.json())
     .then(() => {
@@ -102,7 +121,7 @@ resetBtn.addEventListener('click', () => {
 });
 
 function loadSessions() {
-    fetch(`${BASE_URL}/sessions?user_id=default_user`)
+    fetch(`${BASE_URL}/sessions?user_id=${USER_ID}`)
         .then(response => response.json())
         .then(sessions => {
             sessionList.innerHTML = '';
