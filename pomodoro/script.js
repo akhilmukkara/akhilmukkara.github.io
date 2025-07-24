@@ -127,13 +127,43 @@ function loadSessions() {
             sessionList.innerHTML = '';
             sessions.forEach(session => {
                 const li = document.createElement('li');
-                li.textContent = `${session.start_time} - ${session.completed ? 'Completed' : 'Incomplete'}`;
+                
+                // Format the session display
+                const startDate = new Date(session.start_time);
+                const formattedDate = formatDate(startDate);
+                const startTime = formatTime(startDate);
+                
+                let endTime = 'Ongoing';
+                if (session.end_time) {
+                    const endDate = new Date(session.end_time);
+                    endTime = formatTime(endDate);
+                }
+                
+                const status = session.completed ? 'Completed' : 'Incomplete';
+                
+                // Format: (DD/MM/YYYY) - (Start Time) to (End Time) - (Status)
+                li.textContent = `(${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
                 sessionList.appendChild(li);
             });
         })
         .catch(error => {
             console.error('Error loading sessions:', error);
         });
+}
+
+// Helper function to format date as DD/MM/YYYY
+function formatDate(date) {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+// Helper function to format time as HH:MM
+function formatTime(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
 }
 
 // Initialize
