@@ -1,4 +1,4 @@
-const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api'; // Replace with your actual backend URL
+const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api';
 const timerDisplay = document.getElementById('timer-display');
 const startBtn = document.getElementById('start-btn');
 const pauseBtn = document.getElementById('pause-btn');
@@ -10,11 +10,9 @@ let isRunning = false;
 
 // Generate a unique user ID for this session
 function generateUserId() {
-    // Try to get existing user ID from localStorage
     let userId = localStorage.getItem('pomodoro_user_id');
     
     if (!userId) {
-        // Generate a new unique ID using timestamp + random number
         userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('pomodoro_user_id', userId);
     }
@@ -22,25 +20,21 @@ function generateUserId() {
     return userId;
 }
 
-// Get the user ID for this browser session
 const USER_ID = generateUserId();
 
 function updateTimer() {
     fetch(`${BASE_URL}/timer_status?user_id=${USER_ID}`)
         .then(response => response.json())
         .then(data => {
-            // Force integer seconds to avoid decimal issues
             const totalSeconds = Math.floor(data.remaining_time);
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
             timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Update button states based on server state
             isRunning = data.is_running;
             startBtn.disabled = isRunning;
             pauseBtn.disabled = !isRunning;
             
-            // Update button text based on remaining time
             if (!isRunning && totalSeconds < 25 * 60 && totalSeconds > 0) {
                 startBtn.textContent = 'Resume';
             } else {
@@ -72,7 +66,6 @@ startBtn.addEventListener('click', () => {
         pauseBtn.disabled = false;
         startBtn.textContent = 'Start';
         
-        // Update immediately, then start the interval
         updateTimer();
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(updateTimer, 1000);
@@ -93,7 +86,6 @@ pauseBtn.addEventListener('click', () => {
         if (timerInterval) clearInterval(timerInterval);
         startBtn.disabled = false;
         pauseBtn.disabled = true;
-        // Update display to get current state and set resume button
         updateTimer();
     })
     .catch(error => {
@@ -128,7 +120,6 @@ function loadSessions() {
             sessions.forEach(session => {
                 const li = document.createElement('li');
                 
-                // Format the session display
                 const startDate = new Date(session.start_time);
                 const formattedDate = formatDate(startDate);
                 const startTime = formatTime(startDate);
@@ -141,7 +132,6 @@ function loadSessions() {
                 
                 const status = session.completed ? 'Completed' : 'Incomplete';
                 
-                // Format: (DD/MM/YYYY) - (Start Time) to (End Time) - (Status)
                 li.textContent = `(${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
                 sessionList.appendChild(li);
             });
@@ -151,7 +141,6 @@ function loadSessions() {
         });
 }
 
-// Helper function to format date as DD/MM/YYYY
 function formatDate(date) {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -159,7 +148,6 @@ function formatDate(date) {
     return `${day}/${month}/${year}`;
 }
 
-// Helper function to format time as HH:MM
 function formatTime(date) {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
@@ -168,6 +156,5 @@ function formatTime(date) {
 
 // Initialize
 loadSessions();
-setInterval(loadSessions, 30000); // Refresh session list every 30 seconds
-// Initial timer status check
+setInterval(loadSessions, 30000);
 updateTimer();

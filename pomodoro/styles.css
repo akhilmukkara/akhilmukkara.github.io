@@ -1,73 +1,169 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: #fafafa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a1a;
+}
+
+.container {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 60px;
+    box-shadow: 0 2px 40px rgba(0, 0, 0, 0.06);
     text-align: center;
-    margin: 20px;
-    background-color: 
-#f5f5f5;
+    max-width: 500px;
+    width: 90%;
 }
 
 h1 {
-    font-size: 32px;
-    color: #333;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin-bottom: 40px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
 #timer-display {
-    font-size: 48px;
-    font-weight: bold;
-    color: #333;
-    margin: 20px 0;
+    font-size: 4.5rem;
+    font-weight: 200;
+    color: #1a1a1a;
+    margin: 40px 0;
+    background: #fbfbfb;
+    padding: 40px;
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -2px;
 }
 
 #controls {
-    margin: 20px 0;
+    margin: 30px 0;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 0 5px;
-    font-size: 16px;
+    padding: 12px 32px;
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
-}
-
-#start-btn { 
-    background-color: 
-#4CAF50; 
-    color: white; 
-}
-
-#pause-btn { 
-    background-color: 
-#FFC107; 
-    color: white; 
-}
-
-#reset-btn { 
-    background-color: 
-#F44336; 
-    color: white; 
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    background: white;
+    color: #1a1a1a;
+    transition: all 0.15s ease;
+    min-width: 120px;
+    font-family: inherit;
 }
 
 button:hover {
-    opacity: 0.9;
+    background: #1a1a1a;
+    color: white;
+}
+
+button:active {
+    transform: scale(0.98);
 }
 
 button:disabled {
-    opacity: 0.5;
+    background: #f8f8f8;
+    color: #999;
+    border-color: #e5e5e5;
     cursor: not-allowed;
 }
 
+button:disabled:hover {
+    background: #f8f8f8;
+    color: #999;
+}
+
 #session-history {
-    margin-top: 20px;
+    margin-top: 50px;
+    background: white;
+    padding: 30px;
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+}
+
+#session-history h3 {
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
 }
 
 #session-list {
     list-style-type: none;
-    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 #session-list li {
-    padding: 5px 0;
-    font-size: 14px;
+    padding: 12px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f5f5f5;
+    color: #666;
+    font-family: inherit;
+}
+
+#session-list li:last-child {
+    border-bottom: none;
+}
+
+/* Scrollbar styling */
+#session-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+#session-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#session-list::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 2px;
+}
+
+#session-list::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+        margin: 20px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    #timer-display {
+        font-size: 3rem;
+        padding: 20px;
+    }
+    
+    #controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    button {
+        width: 100%;
+        max-width: 200px;
+    }
 }
