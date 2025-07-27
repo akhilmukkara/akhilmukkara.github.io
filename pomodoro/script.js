@@ -1,5 +1,6 @@
 const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api';
 const timerDisplay = document.getElementById('timer-display');
+const sessionType = document.getElementById('session-type');
 const startBtn = document.getElementById('start-btn');
 const pauseBtn = document.getElementById('pause-btn');
 const resetBtn = document.getElementById('reset-btn');
@@ -8,19 +9,7 @@ const sessionList = document.getElementById('session-list');
 let timerInterval;
 let isRunning = false;
 
-// Generate a unique user ID for this session
-function generateUserId() {
-    let userId = localStorage.getItem('pomodoro_user_id');
-    
-    if (!userId) {
-        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('pomodoro_user_id', userId);
-    }
-    
-    return userId;
-}
-
-const USER_ID = generateUserId();
+// ... (generateUserId and USER_ID unchanged)
 
 function updateTimer() {
     fetch(`${BASE_URL}/timer_status?user_id=${USER_ID}`)
@@ -35,18 +24,22 @@ function updateTimer() {
             startBtn.disabled = isRunning;
             pauseBtn.disabled = !isRunning;
             
-            if (!isRunning && totalSeconds < 25 * 60 && totalSeconds > 0) {
+            if (!isRunning && totalSeconds < data.duration && totalSeconds > 0) {  // Use data.duration for resume check
                 startBtn.textContent = 'Resume';
             } else {
                 startBtn.textContent = 'Start';
             }
+
+            // Update type display
+            sessionType.textContent = `${data.type.charAt(0).toUpperCase() + data.type.slice(1)} Session`;
+            sessionType.className = data.type;  // For CSS colors
             
             if (totalSeconds <= 0 && data.is_running) {
                 clearInterval(timerInterval);
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
                 loadSessions();
-                alert('Pomodoro session completed!');
+                alert(`${data.type.charAt(0).toUpperCase() + data.type.slice(1)} session completed! Starting next session.`);
             }
         })
         .catch(error => {
@@ -54,26 +47,7 @@ function updateTimer() {
         });
 }
 
-startBtn.addEventListener('click', () => {
-    fetch(`${BASE_URL}/start_timer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: USER_ID })
-    })
-    .then(response => response.json())
-    .then(() => {
-        startBtn.disabled = true;
-        pauseBtn.disabled = false;
-        startBtn.textContent = 'Start';
-        
-        updateTimer();
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = setInterval(updateTimer, 1000);
-    })
-    .catch(error => {
-        console.error('Error starting timer:', error);
-    });
-});
+// ... (startBtn event: unchanged, but backend now handles type)
 
 pauseBtn.addEventListener('click', () => {
     fetch(`${BASE_URL}/pause_timer`, { 
@@ -103,6 +77,8 @@ resetBtn.addEventListener('click', () => {
     .then(() => {
         if (timerInterval) clearInterval(timerInterval);
         timerDisplay.textContent = '25:00';
+        sessionType.textContent = 'Work Session';
+        sessionType.className = 'work';
         startBtn.disabled = false;
         pauseBtn.disabled = true;
         startBtn.textContent = 'Start';
@@ -131,8 +107,9 @@ function loadSessions() {
                 }
                 
                 const status = session.completed ? 'Completed' : 'Incomplete';
+                const type = session.type.charAt(0).toUpperCase() + session.type.slice(1);
                 
-                li.textContent = `(${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
+                li.textContent = `${type} (${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
                 sessionList.appendChild(li);
             });
         })
@@ -141,20 +118,10 @@ function loadSessions() {
         });
 }
 
-function formatDate(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-}
-
-function formatTime(date) {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
+// ... (formatDate and formatTime unchanged)
 
 // Initialize
 loadSessions();
 setInterval(loadSessions, 30000);
 updateTimer();
+timerInterval = setInterval(updateTimer, 1000);  // Start polling immediately
