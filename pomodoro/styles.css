@@ -61,3 +61,125 @@ h1 {
 #session-type.break {
     color: #32cd32; /* Lime green for break */
 }
+
+#controls {
+    margin: 30px 0;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 12px 32px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #1a1a1a;
+    border-radius: 4px;
+    background: white;
+    color: #1a1a1a;
+    transition: all 0.15s ease;
+    min-width: 120px;
+    font-family: inherit;
+}
+
+button:hover {
+    background: #1a1a1a;
+    color: white;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background: #f8f8f8;
+    color: #999;
+    border-color: #e5e5e5;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background: #f8f8f8;
+    color: #999;
+}
+
+#session-history {
+    margin-top: 50px;
+    background: white;
+    padding: 30px;
+    border-radius: 4px;
+    border: 1px solid #f0f0f0;
+}
+
+#session-history h3 {
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+#session-list {
+    list-style-type: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#session-list li {
+    padding: 12px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f5f5f5;
+    color: #666;
+    font-family: inherit;
+}
+
+#session-list li:last-child {
+    border-bottom: none;
+}
+
+/* Scrollbar styling */
+#session-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+#session-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#session-list::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 2px;
+}
+
+#session-list::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .container {
+        padding: 25px;
+        margin: 20px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    #timer-display {
+        font-size: 3rem;
+        padding: 20px;
+    }
+    
+    #controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    button {
+        width: 100%;
+        max-width: 200px;
+    }
+}

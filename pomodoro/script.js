@@ -9,7 +9,19 @@ const sessionList = document.getElementById('session-list');
 let timerInterval;
 let isRunning = false;
 
-// ... (generateUserId and USER_ID unchanged)
+// Generate a unique user ID for this session
+function generateUserId() {
+    let userId = localStorage.getItem('pomodoro_user_id');
+    
+    if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('pomodoro_user_id', userId);
+    }
+    
+    return userId;
+}
+
+const USER_ID = generateUserId();
 
 function updateTimer() {
     fetch(`${BASE_URL}/timer_status?user_id=${USER_ID}`)
@@ -47,7 +59,26 @@ function updateTimer() {
         });
 }
 
-// ... (startBtn event: unchanged, but backend now handles type)
+startBtn.addEventListener('click', () => {
+    fetch(`${BASE_URL}/start_timer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: USER_ID })
+    })
+    .then(response => response.json())
+    .then(() => {
+        startBtn.disabled = true;
+        pauseBtn.disabled = false;
+        startBtn.textContent = 'Start';
+        
+        updateTimer();
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+    })
+    .catch(error => {
+        console.error('Error starting timer:', error);
+    });
+});
 
 pauseBtn.addEventListener('click', () => {
     fetch(`${BASE_URL}/pause_timer`, { 
@@ -118,7 +149,18 @@ function loadSessions() {
         });
 }
 
-// ... (formatDate and formatTime unchanged)
+function formatDate(date) {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function formatTime(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
 
 // Initialize
 loadSessions();
