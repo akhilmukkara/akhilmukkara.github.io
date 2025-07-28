@@ -36,7 +36,7 @@ function updateTimer() {
             startBtn.disabled = isRunning;
             pauseBtn.disabled = !isRunning;
             
-            if (!isRunning && totalSeconds < data.duration && totalSeconds > 0) {  // Use data.duration for resume check
+            if (!isRunning && totalSeconds < data.duration && totalSeconds > 0) {
                 startBtn.textContent = 'Resume';
             } else {
                 startBtn.textContent = 'Start';
@@ -44,7 +44,7 @@ function updateTimer() {
 
             // Update type display
             sessionType.textContent = `${data.type.charAt(0).toUpperCase() + data.type.slice(1)} Session`;
-            sessionType.className = data.type;  // For CSS colors
+            sessionType.className = data.type;
             
             if (totalSeconds <= 0 && data.is_running) {
                 clearInterval(timerInterval);
@@ -150,20 +150,25 @@ function loadSessions() {
 }
 
 function formatDate(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    return date.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }).split(',')[0];  // e.g., "28/07/2025"
 }
 
 function formatTime(date) {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return date.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });  // e.g., "20:10"
 }
 
 // Initialize
 loadSessions();
 setInterval(loadSessions, 30000);
 updateTimer();
-timerInterval = setInterval(updateTimer, 1000);  // Start polling immediately
+timerInterval = setInterval(updateTimer, 1000);
