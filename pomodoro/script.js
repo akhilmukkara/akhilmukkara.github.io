@@ -42,16 +42,20 @@ function updateTimer() {
                 startBtn.textContent = 'Start';
             }
 
-            // Update type display
-            sessionType.textContent = `${data.type.charAt(0).toUpperCase() + data.type.slice(1)} Session`;
-            sessionType.className = data.type;
+            // Update type display (handle 'long_break')
+            let displayType = data.type.charAt(0).toUpperCase() + data.type.slice(1);
+            if (data.type === 'long_break') {
+                displayType = 'Long Break';
+            }
+            sessionType.textContent = `${displayType} Session`;
+            sessionType.className = data.type;  // For CSS colors
             
             if (totalSeconds <= 0 && data.is_running) {
                 clearInterval(timerInterval);
                 startBtn.disabled = false;
                 pauseBtn.disabled = true;
                 loadSessions();
-                alert(`${data.type.charAt(0).toUpperCase() + data.type.slice(1)} session completed! Starting next session.`);
+                alert(`${displayType} session completed! Starting next session.`);
             }
         })
         .catch(error => {
@@ -138,9 +142,12 @@ function loadSessions() {
                 }
                 
                 const status = session.completed ? 'Completed' : 'Incomplete';
-                const type = session.type.charAt(0).toUpperCase() + session.type.slice(1);
+                let typeDisplay = session.type.charAt(0).toUpperCase() + session.type.slice(1);
+                if (session.type === 'long_break') {
+                    typeDisplay = 'Long Break';
+                }
                 
-                li.textContent = `${type} (${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
+                li.textContent = `${typeDisplay} (${formattedDate}) - ${startTime} to ${endTime} - ${status}`;
                 sessionList.appendChild(li);
             });
         })

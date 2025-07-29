@@ -62,6 +62,10 @@ h1 {
     color: #32cd32; /* Lime green for break */
 }
 
+#session-type.long_break {
+    color: #4682b4; /* Steel blue for long break */
+}
+
 #controls {
     margin: 30px 0;
     display: flex;
