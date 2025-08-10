@@ -1,9 +1,4 @@
-// Generate a simple user ID (replace with your actual implementation if different)
-function generateUserId() {
-    return 'user_' + Math.random().toString(36).substr(2, 9);
-}
 const USER_ID = generateUserId(); // Persistent user ID
-
 const BASE_URL = 'https://pomodoro-render-deployment.onrender.com/api';
 const timerDisplay = document.getElementById('timer-display');
 const sessionType = document.getElementById('session-type');
@@ -14,20 +9,35 @@ const muteToggle = document.getElementById('mute-toggle');
 const sessionList = document.getElementById('session-list');
 
 // Sound elements
-const workSound = document.getElementById('work-sound');
-const shortBreakSound = document.getElementById('short-break-sound');
-const longBreakSound = document.getElementById('long-break-sound');
+const sounds = {
+    work_end: document.getElementById('work-sound'),
+    break_end: document.getElementById('short-break-sound'),
+    long_break_end: document.getElementById('long-break-sound')
+};
 
 let timerInterval;
 let isRunning = false;
 let isMuted = false;
 let lastSessionType = null;
 
+// Generate a simple user ID
+function generateUserId() {
+    return 'user_' + Math.random().toString(36).substr(2, 9);
+}
+
 // Mute toggle
 muteToggle.addEventListener('click', () => {
     isMuted = !isMuted;
     muteToggle.textContent = isMuted ? 'Unmute Sounds' : 'Mute Sounds';
 });
+
+// Play sound based on sound_event
+function playSound(soundId) {
+    if (isMuted || !sounds[soundId]) return;
+    const sound = sounds[soundId];
+    sound.currentTime = 0;
+    sound.play().catch(error => console.error('Sound playback failed:', error));
+}
 
 // Start button
 startBtn.addEventListener('click', () => {
@@ -125,32 +135,15 @@ function updateTimer() {
             sessionType.textContent = `${data.type.charAt(0).toUpperCase() + data.type.slice(1).replace('_', ' ')} Session`;
             sessionType.className = data.type;
             
-            if (totalSeconds <= 0 && data.is_running && lastSessionType === data.type) {
-                playEndSound(data.type);
+            if (data.sound_event) {
+                playSound(data.sound_event); // Play sound for session completion
                 loadSessions();
                 alert(`${data.type.charAt(0).toUpperCase() + data.type.slice(1).replace('_', ' ')} session completed! Starting next session.`);
-                clearInterval(timerInterval);
-                timerInterval = setInterval(updateTimer, 1000); // Restart polling
-                startBtn.disabled = false;
-                pauseBtn.disabled = true;
             }
             
             lastSessionType = data.type;
         })
         .catch(error => console.error('Error fetching timer status:', error));
-}
-
-// Play sound
-function playEndSound(sessionType) {
-    if (isMuted) return;
-    let sound;
-    if (sessionType === 'work') sound = workSound;
-    else if (sessionType === 'break') sound = shortBreakSound; // Match backend 'break' type
-    else if (sessionType === 'long_break') sound = longBreakSound;
-    if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch(error => console.error('Sound playback failed:', error));
-    }
 }
 
 // Load sessions
@@ -178,7 +171,7 @@ function loadSessions() {
         .catch(error => console.error('Error loading sessions:', error));
 }
 
-// Format date/time (replace with your actual functions if different)
+// Format date/time
 function formatDate(date) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }

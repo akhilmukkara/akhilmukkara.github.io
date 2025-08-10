@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pomodoro Timer</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Linked your CSS file here -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -15,13 +15,13 @@
             <button id="start-btn">Start</button>
             <button id="pause-btn" disabled>Pause</button>
             <button id="reset-btn">Reset</button>
-            <button id="mute-toggle">Mute Sounds</button> <!-- Added mute toggle -->
+            <button id="mute-toggle">Mute Sounds</button>
         </div>
         <div id="session-history">
             <h3>Session History</h3>
             <ul id="session-list"></ul>
         </div>
-        <!-- Preload sound files -->
+        <!-- Audio elements for session completion -->
         <audio id="work-sound" src="assets/sounds/work-end.mp3" preload="auto"></audio>
         <audio id="short-break-sound" src="assets/sounds/short-break-end.mp3" preload="auto"></audio>
         <audio id="long-break-sound" src="assets/sounds/long-break-end.mp3" preload="auto"></audio>
